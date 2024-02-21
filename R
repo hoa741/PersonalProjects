@@ -1,0 +1,186 @@
+library(ggplot2)
+
+# Definindo uma semente para garantir a reprodutibilidade dos resultados
+set.seed(42)
+
+# Função para calcular a razão entre duas qui-quadrado divididas por seus graus de liberdade
+razao_chi_quadrado_para_F <- function(chi1, chi2, chi3, chi4, chi5, chi6, df1, df2, df3, df4, df5, df6) {
+  # Calcula as razões entre as qui-quadrado e seus graus de liberdade
+  chi_ratio1 <- (chi1 / df1) / (chi2 / df2)
+  chi_ratio2 <- (chi3 / df3) / (chi4 / df4)
+  chi_ratio3 <- (chi5 / df5) / (chi6 / df6)
+  
+  # Calcula o valor de p associado à razão
+  p_value1 <- pf(chi_ratio1, df1, df2, lower.tail = TRUE)
+  p_value2 <- pf(chi_ratio2, df3, df4, lower.tail = TRUE)
+  p_value3 <- pf(chi_ratio3, df5, df6, lower.tail = TRUE)
+  return(list(
+    chi_ratio1 = chi_ratio1, chi_ratio2 = chi_ratio2, chi_ratio3 = chi_ratio3,
+    p_value1 = p_value1, p_value2 = p_value2, p_value3 = p_value3)
+  )
+}
+
+# Qui-quadrados e graus de liberdade
+chi_quadrado_1 <- 15
+df_1 <- 5
+chi_quadrado_2 <- 12
+df_2 <- 3
+
+chi_quadrado_3 <- 20
+df_3 <- 8
+chi_quadrado_4 <- 8
+df_4 <- 4
+
+chi_quadrado_5 <- 10
+df_5 <- 3
+chi_quadrado_6 <- 18
+df_6 <- 2
+
+# Calcula a razão e o valor de p associado
+resultado <- razao_chi_quadrado_para_F(chi_quadrado_1, chi_quadrado_2, chi_quadrado_3,
+                                       chi_quadrado_4, chi_quadrado_5, chi_quadrado_6,
+                                       df_1, df_2, df_3, df_4, df_5, df_6)
+
+# Gera os dados para os gráficos
+x1 <- seq(0, 30, length.out = 100)
+x2 <- seq(0, 30, length.out = 100)
+x3 <- seq(0, 30, length.out = 100)
+x4 <- seq(0, 30, length.out = 100)
+x5 <- seq(0, 30, length.out = 100)
+x6 <- seq(0, 30, length.out = 100)
+y1 <- dchisq(x1, df = df_1)
+y2 <- dchisq(x2, df = df_2)
+y3 <- dchisq(x3, df = df_3)
+y4 <- dchisq(x4, df = df_4)
+y5 <- dchisq(x5, df = df_5)
+y6 <- dchisq(x6, df = df_6)
+
+x_f <- seq(0, 5, length.out = 1000)
+y_f1 <- df(x_f, df_1, df_2)
+y_f2 <- df(x_f, df_3, df_4)
+y_f3 <- df(x_f, df_5, df_6)
+
+# Cria os gráficos
+plot1 <- ggplot(data.frame(x = x1, y = y1), aes(x, y)) +
+  geom_line(color = "blue") +
+  labs(title = "Distribuição Qui-quadrado 1",
+       x = "Valor", y = "Densidade")
+
+plot2 <- ggplot(data.frame(x = x2, y = y2), aes(x, y)) +
+  geom_line(color = "red") +
+  labs(title = "Distribuição Qui-quadrado 2",
+       x = "Valor", y = "Densidade")
+
+plot3 <- ggplot(data.frame(x = x3, y = y3), aes(x, y)) +
+  geom_line(color = "green") +
+  labs(title = "Distribuição Qui-quadrado 3",
+       x = "Valor", y = "Densidade")
+
+plot4 <- ggplot(data.frame(x = x4, y = y4), aes(x, y)) +
+  geom_line(color = "purple") +
+  labs(title = "Distribuição Qui-quadrado 4",
+       x = "Valor", y = "Densidade")
+
+plot5 <- ggplot(data.frame(x = x5, y = y5), aes(x, y)) +
+  geom_line(color = "cyan") +
+  labs(title = "Distribuição Qui-quadrado 5",
+       x = "Valor", y = "Densidade")
+
+plot6 <- ggplot(data.frame(x = x6, y = y6), aes(x, y)) +
+  geom_line(color = "orange") +
+  labs(title = "Distribuição Qui-quadrado 6",
+       x = "Valor", y = "Densidade")
+
+plot_both_1 <- ggplot() +
+  geom_line(data = data.frame(x = x1, y1 = y1, y2 = y2), aes(x, y1), color = "blue") +
+  geom_line(data = data.frame(x = x2, y1 = y1, y2 = y2), aes(x, y2), color = "red") +
+  labs(title = "Distribuições Qui-quadrado 1 e 2",
+       x = "Valor", y = "Densidade", color = "Distribuição") +
+  scale_color_manual(values = c("blue", "red"))
+
+plot_both_2 <- ggplot() +
+  geom_line(data = data.frame(x = x3, y3 = y3, y4 = y4), aes(x, y3), color = "green") +
+  geom_line(data = data.frame(x = x4, y3 = y3, y4 = y4), aes(x, y4), color = "purple") +
+  labs(title = "Distribuições Qui-quadrado 3 e 4",
+       x = "Valor", y = "Densidade", color = "Distribuição") +
+  scale_color_manual(values = c("green", "purple"))
+
+plot_both_3 <- ggplot() +
+  geom_line(data = data.frame(x = x5, y5 = y5, y6 = y6), aes(x, y5), color = "black") +
+  geom_line(data = data.frame(x = x6, y5 = y5, y6 = y6), aes(x, y6), color = "brown") +
+  labs(title = "Distribuições Qui-quadrado 5 e 6",
+       x = "Valor", y = "Densidade", color = "Distribuição") +
+  scale_color_manual(values = c("black", "brown"))
+
+plot_ratio1 <- ggplot(data.frame(x = x_f, y = y_f1), aes(x, y)) +
+  geom_line(color = "blue") +
+  labs(title = "Distribuição F de Fisher-Snedecor 1",
+       x = "Valor", y = "Densidade")
+
+plot_ratio2 <- ggplot(data.frame(x = x_f, y = y_f2), aes(x, y)) +
+  geom_line(color = "purple") +
+  labs(title = "Distribuição F de Fisher-Snedecor 2",
+       x = "Valor", y = "Densidade")
+
+plot_ratio3 <- ggplot(data.frame(x = x_f, y = y_f3), aes(x, y)) +
+  geom_line(color = "black") +
+  labs(title = "Distribuição F de Fisher-Snedecor 3",
+       x = "Valor", y = "Densidade")
+
+# Mostra os gráficos
+print(plot1)
+print(plot2)
+print(plot3)
+print(plot4)
+print(plot5)
+print(plot6)
+print(plot_both_1)
+print(plot_both_2)
+print(plot_both_3)
+print(plot_ratio1)
+print(plot_ratio2)
+print(plot_ratio3)
+
+# Mostrar agora que uma binomial quando n tende ao infinito, se aproxima de uma poisson:
+
+# Definindo o número de lançamentos da moeda
+n <- 1000  # Defina um valor grande para n
+
+# Definindo a probabilidade de sucesso (sair cara)
+p <- 0.1
+
+# Definindo o parâmetro lambda para a distribuição de Poisson
+lambda <- n * p
+
+# Para métodos de comparação plota-se uma binomial com n pequeno
+binomial_pq <- rbinom(10000, 50, p)
+
+# Realizando um experimento de lançamento de moeda n vezes (distribuição binomial)
+resultados_binomial <- rbinom(10000, n, p)
+
+# Realizando o mesmo experimento, mas considerando uma distribuição de Poisson
+resultados_poisson <- rpois(10000, lambda)
+
+# Criando os gráficos
+plot_binomial_pq <- ggplot(data.frame(x = binomial_pq), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dbinom(as.integer(x), n, p) }, color = "red", linewidth = 1) +
+  labs(title = "Distribuição Binomial (n = 50)", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+plot_binomial <- ggplot(data.frame(x = resultados_binomial), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dbinom(as.integer(x), n, p) }, color = "red", linewidth = 1) +
+  labs(title = "Distribuição Binomial (n = 1000)", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+plot_poisson <- ggplot(data.frame(x = resultados_poisson), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "lightgreen", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dpois(as.integer(x), lambda) }, color = "blue", linewidth = 1) +
+  labs(title = "Distribuição de Poisson", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+# Mostrando os gráficos
+print(plot_binomial_pq)
+print(plot_binomial)
+print(plot_poisson)
