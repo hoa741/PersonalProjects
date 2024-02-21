@@ -1,0 +1,103 @@
+# Solução:~> (a) definir a classe Numero_Natural com o atributo privado n 
+# começando com 0 pois queremos atribuir um numero inteiro e positivo. Logo em 
+# seguida, define-se o construtor __init__ com auxilio da funcao set, sendo que 
+# o set_n foi especificado para que somente "setasse" numeros inteiros e 
+# positivos, tanto para o caso de valor numérico quanto para o caso de 
+# valor literal.
+
+class Numero_Natural:
+  __n = 0
+
+  def __init__(self, n):
+    self.set_n(n)
+
+  def get_n(self):
+    return self.__n
+
+  def set_n(self, n):
+    if type(n) == int:
+      if n > 0:
+        self.__n = n 
+      else:
+        print('numero nao positivo ou nulo')
+        return None
+     
+    if type(n) == str:
+      if n.isnumeric() == True:
+        n = int(n)
+        if n > 0:
+          self.__n = n 
+
+        else:
+          print('numero nao positivo ou nulo')
+          return None
+      
+      else:
+        print('valor literal inexistente')
+        return None
+
+objeto_0 = Numero_Natural(9)
+print('Resultado (a): ', objeto_0.get_n())
+
+# Solução ~> (b) para este item, foi preciso através de polimorfismo, reescrever
+# a função set_n para que esta invés de identificar numeros inteiros e positivos
+# igual à super classe Numero_Natural, agora identifique somente numeros inteiros
+# na subclasse criada chamada Numero_Inteiro.
+
+class Numero_Inteiro(Numero_Natural):
+  __n = 0
+  __super_classe = None
+ 
+  def __init__(self, n):
+    self.__super_classe = super()
+    self.__super_classe.__init__(n)
+    self.set_n(n)
+    
+  def get_n(self):
+    return self.__n
+
+  def set_n(self, n):
+    if type(n) == int:
+      self.__n = n
+    else:
+      print('numero nao inteiro')
+      return None
+
+objeto_1 = Numero_Inteiro(10)
+print('Resultado (b): ', objeto_1.get_n())
+
+# Solução ~> (c) para este problema, considerando que o __denominador não pode
+# assumir valor nulo, terá valor inicial (default) igual a um. A classe criada
+# Numero_Racional, com os métodos de encapsulamento reaproveitou a classe 
+# Numero_Inteiro e foi "setado" as condições para que o denominador -caso diferente
+# de zero- seja atribuído. No caso do denominador ser igual a zero, assim como 
+# dito no começo, assumirá como valor padrão o número um para evitar divisão por
+# nulo.
+
+class Numero_Racional:
+  __numerador = Numero_Inteiro(0)
+  __denominador = Numero_Inteiro(1)
+
+  def __init__(self, numerador, denominador):
+    self.set_numerador(numerador)
+    self.set_denominador(denominador)
+
+  def get_numerador(self):
+    return self.__numerador.get_n()
+
+  def get_denominador(self):
+    return self.__denominador.get_n()
+
+  def set_numerador(self, numerador):
+    self.__numerador.set_n(numerador)
+
+  def set_denominador(self, denominador):
+    if denominador != 0:
+      self.__denominador.set_n(denominador)
+
+    else:
+      print('Resultado (c): valor nulo, o zero será substituído por um.')
+      return None
+         
+objeto_2 = Numero_Racional(12, 0)
+print('Resultado (c): ', objeto_2.get_numerador() / objeto_2.get_denominador())
