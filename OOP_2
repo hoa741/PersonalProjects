@@ -1,0 +1,100 @@
+# Solução:~> para este exercício foi preciso criar a classe carta, com 3 atribu-
+# tos privados: valor, naipe e peso. Valor recebe uma string ou valor literal, 
+# naipe recebe uma string e peso recebe um valor real positivo. Ainda adicionei
+# mais um atributo dict_pesos a fim de designar os pesos baseados em cada carta.
+# Para configurar os métodos get e sets, foi preciso nos sets definir as 
+# condições necessárias explicadas abaixo no código.
+
+class Carta:
+  __valor = ''
+  __naipe = ''
+  __peso = 0
+  __dict_pesos = {'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7,
+                     '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13}
+
+  def __init__(self, valor='A', naipe='Paus'):
+    self.set_valor(valor)
+    self.set_naipe(naipe)
+    self.set_peso(valor, naipe)
+
+  def get_valor(self):
+    return self.__valor 
+
+  def get_naipe(self):
+    return self.__naipe 
+
+  def get_peso(self):
+    return self.__peso
+
+# criei uma lista 'baralho' e a atribui todos os elementos que o atributo valor 
+# pode assumir, e caso não seja atribuido um valor adequado, será retornado None.
+  def set_valor(self, valor):
+    baralho = ['A', '2', '3', '4', '5', '6', '7',
+               '8', '9', '10', 'J', 'Q', 'K']
+    if valor in baralho:
+      self.__valor = valor
+
+    else:
+      print('valor invalido')
+      return None
+
+# seguindo o mesmo raciocinio com este atributo, criei uma lista 'np' com as
+# strings que naipe pode assumir, e caso seja um caso invalido irá retornar None.
+  def set_naipe(self, naipe):
+    np = ['Paus', 'Copas','Espadas', 'Ouros']
+    if naipe in np:
+      self.__naipe = naipe
+
+    else:
+      print('naipe inexistente')
+      return None
+
+  def show(self):
+    return f'Valor: {self.get_valor()} Naipe: {self.get_naipe()}, Peso: {self.get_peso()}'
+
+# peso receberá somente valores correspondente no dict_pesos a sua carta.
+  def set_peso(self, get_valor, get_naipe):
+    if get_valor != None and get_naipe != None:
+      self.__peso = self.__dict_pesos[get_valor]
+
+# sobrecarga do operador lógico de verificação de igualdade
+  def __eq__(self, other):
+    x1 = self.get_valor()
+    x2 = other.get_valor()
+    y1 = self.get_naipe()
+    y2 = other.get_naipe()
+    z1 = self.get_peso()
+    z2 = other.get_peso()
+
+    if x1 == x2 and y1 == y2 and z1 == z2:
+      return True
+
+    else:
+      return False
+
+# sobrecarga do operador lógico de verificação de maioridade
+  def __gt__(self, other):
+    if self.get_peso() > other.get_peso():
+      return True
+    
+    else:
+      return False
+
+# sobrecarga do operador lógico de verificação de minoridade
+  def __lt__(self, other):
+    if self.get_peso() < other.get_peso():
+      return True
+    
+    else:
+      return False
+
+ob1 = Carta('K', 'Copas')
+
+ob2 = Carta('J', 'Espadas')
+
+ob3 = Carta()
+ob3.set_naipe('Copas')
+ob3.set_valor('4')
+print('ob1 é igual a ob2:', ob1 == ob2)
+print('ob1 é maior que ob2 em peso:', ob1 > ob2)
+print('ob1 é menor que ob2 em peso:', ob1 < ob2)
