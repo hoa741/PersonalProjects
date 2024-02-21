@@ -1,0 +1,63 @@
+import numpy as np
+import pandas as pd  
+import seaborn as sns
+import matplotlib.pyplot as plt
+import matplotlib.style as style
+import matplotlib.dates as mdates
+import statistics as stat
+
+# General setup
+#plt.style.use('fivethirtyeight')
+plt.style.use('fivethirtyeight')
+
+plt.rcParams.update({'figure.figsize': (8, 4)})
+
+# MATPLOTLIB CONFIGS
+plt.rcParams['axes.facecolor']='white'
+plt.rcParams['figure.facecolor']='white'
+plt.rcParams['savefig.facecolor']='white'
+
+spent_wine = [245, 520, 190, 66, 62, 136, 510, 510, 83, 269,
+              392, 825, 134, 440, 440, 211, 479, 63, 464, 331,
+              506, 196, 487, 59, 72, 1341, 127, 63, 1304, 96,
+              119, 119, 74, 109, 61, 68, 1256, 765, 150, 364,
+              322, 595, 240, 57, 434, 60]
+
+df = pd.DataFrame(data=spent_wine, columns=['spent'])
+df
+
+sns.histplot(data=df, x='spent', stat='count', bins=6, binwidth=225)
+
+sns.histplot(data=df, x='spent', stat='count', kde=True, binwidth = 225)
+
+# (b):
+
+mean = stat.mean(spent_wine)
+median = stat.median(spent_wine)
+#mode = stat.mode(spent_wine)
+
+print('média =', mean)  
+print('mediana =', median)
+
+df.describe()
+df.median()
+print(sorted(spent_wine))
+
+# (c):
+
+from math import sqrt
+
+amplitude = max(spent_wine) - min(spent_wine)
+
+def variance(spent_wine):
+  sm = sum(spent_wine)
+  n = len(spent_wine)
+
+  deviations = [(x - mean) ** 2 for x in spent_wine] 
+  var =  sum(deviations) / (n - 1)
+
+  return var
+
+print('variancia =', variance(spent_wine))
+print('desvio padrao =', sqrt(variance(spent_wine)))
+print('amplitude =', amplitude)
