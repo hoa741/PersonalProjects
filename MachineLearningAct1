@@ -1,0 +1,121 @@
+# upload da base de dados (etapa de agregacao ja realizada no excel)
+import pandas as pd
+df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQbTjoqdymRs4poTWEJbAp1wvUfmEMRjVbbrE7e_taAg1O0cr0W9CUS0DdnOWKWnsS9LK8ZZwB7pzxI/pub?gid=1632936491&single=true&output=csv', sep = ',')
+
+# selecao de atributos
+
+import numpy as numpy
+import sklearn
+import pandas as pd
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.feature_selection import chi2
+
+X = df.drop(['Target', 'Previous qualification (grade)', 'Admission grade',
+             'Inflation rate', 'Unemployment rate', 'GDP'],axis=1)
+y = df['Target']
+
+# teste qui-quadrado - variaveis discretas
+
+chi_scores = chi2(X,y)
+
+p_values_chi = pd.Series(chi_scores[1],index = X.columns)
+p_values_chi.sort_values(ascending = False , inplace = True)
+
+p_values_chi
+
+# pelo anova - covariaveis continuas
+
+X = df[['Previous qualification (grade)', 'Admission grade',
+             'Inflation rate', 'Unemployment rate', 'GDP']]
+y = df['Target']
+
+anova = sklearn.feature_selection.f_classif(X, y)
+
+p_values_anova = pd.Series(anova[1],index = X.columns)
+p_values_anova.sort_values(ascending = False , inplace = True)
+
+p_values_anova
+
+p_values_anova.plot.bar()
+p_values_chi.plot.bar()
+
+p_values_anova = p_values_anova.to_frame()
+p_values_chi = p_values_chi.to_frame()
+p_values_anova.to_latex()
+p_values_chi.to_latex()
+
+df = df.drop(["Inflation rate", "Previous qualification", "Educational special needs",
+              "International", "Course", "Daytime/evening attendance"], axis = 1)
+
+#Modelo de Classificação Árvore de Decisão
+
+#separando o grupo de treinamento e o de teste
+
+import sklearn
+from sklearn.model_selection import train_test_split
+df_split = sklearn.model_selection.train_test_split(df, test_size=0.2, train_size=0.8, random_state=None, shuffle=True, stratify=None)
+df_train = df_split[0]
+df_test = df_split[1]
+
+X_test = df_test.drop("Target", axis = 1).to_numpy()
+Y_test = df_test[["Target"]].to_numpy()
+X_train = df_train.drop("Target", axis = 1).to_numpy()
+Y_train = df_train[["Target"]].to_numpy()
+
+import sklearn
+from sklearn import tree
+
+clf = tree.DecisionTreeClassifier(criterion = 'log_loss')
+clf = clf.fit(X_train, Y_train)
+
+predicted_clf = clf.predict(X_test)
+
+from sklearn import metrics
+
+confusion_matrix = metrics.confusion_matrix(Y_test, predicted_clf)
+cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix, display_labels = ["Dropout", "Graduate", "Enrolled"])
+
+import matplotlib.pyplot as plt
+
+cm_display.plot()
+plt.show()
+
+# validacao do modelo
+ac_dt = sklearn.metrics.accuracy_score(Y_test, predicted_clf)
+pr_dt = sklearn.metrics.precision_score(Y_test, predicted_clf, average='weighted')
+re_dt = sklearn.metrics.recall_score(Y_test, predicted_clf, average='weighted')
+f1_dt = sklearn.metrics.f1_score(Y_test, predicted_clf, average='weighted')
+
+metricas_dt = pd.DataFrame({'Métrica': ['Acurácia', 'Precisão', 'Revocação', 'Medida-F'],
+                             '': [ac_dt, pr_dt, re_dt, f1_dt]})
+
+metricas_dt.to_latex()
+
+# Classificação Via KNN
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn_10 = KNeighborsClassifier(n_neighbors = 10) #escolhido
+knn_10.fit(X_train, Y_train)
+predicted_knn_10 = knn_10.predict(X_test)
+
+confusion_matrix = metrics.confusion_matrix(Y_test, predicted_knn_10)
+cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix,
+                                            display_labels = ["Dropout", "Graduate", "Enrolled"])
+
+cm_display.plot()
+plt.show()
+
+# validacao do modelo
+
+ac_knn = sklearn.metrics.accuracy_score(Y_test, predicted_knn_10)
+pr_knn = sklearn.metrics.precision_score(Y_test, predicted_knn_10, average='weighted')
+re_knn = sklearn.metrics.recall_score(Y_test, predicted_knn_10, average='weighted')
+f1_knn = sklearn.metrics.f1_score(Y_test, predicted_knn_10, average='weighted')
+
+metricas_knn = pd.DataFrame({'Métrica': ['Acurácia', 'Precisão', 'Revocação', 'Medida-F'],
+                             '': [ac_knn, pr_knn, re_knn, f1_knn]})
+
+metricas_knn.to_latex()
