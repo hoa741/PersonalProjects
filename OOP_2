@@ -1,3 +1,6 @@
+import pandas as pd
+pd.DataFrame()
+
 # Solução:~> para este exercício foi preciso criar a classe carta, com 3 atribu-
 # tos privados: valor, naipe e peso. Valor recebe uma string ou valor literal, 
 # naipe recebe uma string e peso recebe um valor real positivo. Ainda adicionei
