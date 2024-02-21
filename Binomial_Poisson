@@ -1,0 +1,48 @@
+library(ggplot2)
+
+# Definindo uma semente para garantir a reprodutibilidade dos resultados
+set.seed(42)
+
+# Mostrar agora que uma binomial quando n tende ao infinito, se aproxima de uma poisson:
+
+# Definindo o número de lançamentos da moeda
+n <- 1000  # Defina um valor grande para n
+
+# Definindo a probabilidade de sucesso (sair cara)
+p <- 0.1
+
+# Definindo o parâmetro lambda para a distribuição de Poisson
+lambda <- n * p
+
+# Para métodos de comparação plota-se uma binomial com n pequeno
+binomial_pq <- rbinom(10000, 50, p)
+
+# Realizando um experimento de lançamento de moeda n vezes (distribuição binomial)
+resultados_binomial <- rbinom(10000, n, p)
+
+# Realizando o mesmo experimento, mas considerando uma distribuição de Poisson
+resultados_poisson <- rpois(10000, lambda)
+
+# Criando os gráficos
+plot_binomial_pq <- ggplot(data.frame(x = binomial_pq), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dbinom(as.integer(x), n, p) }, color = "red", linewidth = 1) +
+  labs(title = "Distribuição Binomial (n = 50)", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+plot_binomial <- ggplot(data.frame(x = resultados_binomial), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dbinom(as.integer(x), n, p) }, color = "red", linewidth = 1) +
+  labs(title = "Distribuição Binomial (n = 1000)", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+plot_poisson <- ggplot(data.frame(x = resultados_poisson), aes(x)) +
+  geom_histogram(binwidth = 1, fill = "lightgreen", color = "black", aes(y = after_stat(density))) +
+  stat_function(fun = function(x) { dpois(as.integer(x), lambda) }, color = "blue", linewidth = 1) +
+  labs(title = "Distribuição de Poisson", x = "Número de Caras", y = "Densidade") +
+  theme_minimal()
+
+# Mostrando os gráficos
+print(plot_binomial_pq)
+print(plot_binomial)
+print(plot_poisson)
