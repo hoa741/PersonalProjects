@@ -1,0 +1,93 @@
+pesos = {'A': 0, 'K': 10}
+novos_pesos = {'K': 5}
+pesos.update(novos_pesos)
+print(pesos)
+
+import random 
+
+# Solução:~>
+
+class Baralho:
+  __valores_validos = []
+  __naipes_validos = []
+  __pesos_validos = {}
+  __cartas = []
+
+  def __init__(self, 
+               valores_validos=['A', '2', '3', '4', '5', '6', '7',
+                              '8', '9', '10', 'J', 'Q', 'K'], 
+               naipes_validos=['Paus', 'Copas','Espadas', 'Ouros'], 
+               pesos_validos = {'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7,
+                     '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13}):
+    self.set_values(valores_validos)
+    self.set_nps(naipes_validos)
+    self.set_pesos(pesos_validos)
+    
+  def get_values(self):
+    return self.__valores_validos
+
+  def get_nps(self):
+    return self.__naipes_validos
+
+  def set_values(self, valores_validos):
+    self.__valores_validos = valores_validos
+
+  def set_nps(self, naipes_validos):
+    self.__naipes_validos = naipes_validos
+
+  def get_pesos(self):
+    return self.__pesos_validos
+
+  def set_pesos(self, pesos_validos):
+    self.__pesos_validos = pesos_validos
+
+  def update_pesos(self, novos_pesos):
+    pesos_copy = self.get_pesos()
+
+    pesos_copy.update(novos_pesos)
+
+    self.set_pesos(pesos_copy)
+
+  def set_deck(self, cards):
+    self.__cartas = cards
+
+  def get_deck(self):
+    return self.__cartas
+
+  def build_deck(self):
+    deck = []
+
+    #peso da carta/valor
+    # self.get_pesos()[v]
+
+    for v in self.get_values():
+      for n in self.get_nps():
+        deck.append(Carta(v, n))
+
+    self.set_deck(deck)
+
+  def show_cards(self):
+    return print([card.show() for card in self.__cartas])
+
+  def shuffle(self):
+    deck_copy = self.get_deck()
+
+    deck_copy = sorted(deck_copy, key = lambda x: random.random())
+
+    self.set_deck(deck_copy)
+
+  
+  def get_random_card(self):
+    n_cards = len(self.get_deck())
+    random_index = random.randint(0, n_cards - 1)
+
+    random_card = self.get_deck()[random_index]
+
+    return random_card
+
+cobalt = Baralho()
+cobalt.build_deck()
+cobalt.show_cards()
+cobalt.shuffle()
+cobalt.show_cards()
+cobalt.get_random_card().show()
